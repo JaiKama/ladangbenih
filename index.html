@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ladang Benih Management System</title>
+    <meta name="description" content="Management system for Ladang Benih agricultural operations">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/your_script_id_here/exec?action=getPeserta";
+
+async function loadPeserta() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    console.log(data); // data peserta
+    // Anda boleh masukkan dalam DOM sebagai kad peserta
+}
+window.onload = loadPeserta;
+</script>
+
+
+
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+        }
+        .task-card {
+            transition: all 0.3s ease;
+        }
+        .task-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                z-index: 50;
+                height: 100vh;
+            }
+            .sidebar.active {
+                left: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="sidebar bg-white w-64 border-r border-gray-200 flex-shrink-0">
+            <div class="p-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold text-green-800">Ladang Benih</h1>
+                    <button id="mobile-menu-close" class="md:hidden text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <p class="text-gray-500 text-sm mt-1">Management System</p>
+            </div>
+            <nav class="mt-6">
+                <div>
+                    <a href="#" class="flex items-center px-4 py-3 text-green-700 bg-green-50 border-l-4 border-green-600">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+                        <i class="fas fa-users mr-3"></i>
+                        <span>Peserta</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+                        <i class="fas fa-tasks mr-3"></i>
+                        <span>Task</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+                        <i class="fas fa-map-marked-alt mr-3"></i>
+                        <span>Lot Tanah</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+                        <i class="fas fa-chart-bar mr-3"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+                        <i class="fas fa-cog mr-3"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+                <div class="flex items-center">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=4CAF50&color=fff" alt="Admin" class="w-10 h-10 rounded-full">
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-gray-900">Admin</p>
+                        <p class="text-xs text-gray-500">Super Admin</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <!-- Mobile Header -->
+            <header class="md:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between">
+                <button id="mobile-menu-button" class="text-gray-500">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="text-xl font-bold text-green-800">Dashboard</h1>
+                <div class="w-8"></div>
+            </header>
+
+            <!-- Desktop Header -->
+            <header class="hidden md:flex items-center justify-between bg-white border-b border-gray-200 p-4">
+                <h1 class="text-xl font-bold text-green-800">Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <button class="p-2 text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main class="p-4">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Total Peserta</p>
+                                <h3 class="text-2xl font-bold text-gray-800">24</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-green-100 text-green-600">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-green-600 text-sm font-medium">+2 from last week</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Active Tasks</p>
+                                <h3 class="text-2xl font-bold text-gray-800">18</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                                <i class="fas fa-tasks text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-blue-600 text-sm font-medium">+5 from last week</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Completed Tasks</p>
+                                <h3 class="text-2xl font-bold text-gray-800">42</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-purple-600 text-sm font-medium">+12 from last week</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500">Total Lot Tanah</p>
+                                <h3 class="text-2xl font-bold text-gray-800">15</h3>
+                            </div>
+                            <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                <i class="fas fa-map-marked-alt text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="text-yellow-600 text-sm font-medium">No change</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Task Completion Rate</h2>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-green-100 text-green-800 rounded">Week</button>
+                                <button class="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded">Month</button>
+                                <button class="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded">Year</button>
+                            </div>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="taskChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Task Distribution by Lot</h2>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 text-xs bg-green-100 text-green-800 rounded">Active</button>
+                                <button class="px-3 py-1 text-xs bg-gray-100 text-gray-800 rounded">All</button>
+                            </div>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="lotChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tasks and Participants -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Tasks -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 border-b border-gray-200">
+                            <h2 class="text-lg font-semibold text-gray-800">Recent Tasks</h2>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800">Penyediaan Tanah Lot A5</h3>
+                                        <p class="text-sm text-gray-500">Assigned to Ahmad bin Ali</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">In Progress</span>
+                                </div>
+                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                    <i class="far fa-calendar-alt mr-1"></i>
+                                    <span>Due: 15 Jun 2023</span>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800">Penanaman Benih Lot B2</h3>
+                                        <p class="text-sm text-gray-500">Assigned to Siti binti Rahman</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">Completed</span>
+                                </div>
+                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                    <i class="far fa-calendar-alt mr-1"></i>
+                                    <span>Completed: 10 Jun 2023</span>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="font-medium text-gray-800">Penyiraman Lot C1</h3>
+                                        <p class="text-sm text-gray-500">Assigned to Lim Chen Wei</p>
+                                    </div>
+                                    <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Pending</span>
+                                </div>
+                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                    <i class="far fa-calendar-alt mr-1"></i>
+                                    <span>Due: 20 Jun 2023</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-gray-200 text-center">
+                            <a href="#" class="text-green-600 hover:text-green-800 text-sm font-medium">View All Tasks</a>
+                        </div>
+                    </div>
+
+                    <!-- Participants -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-semibold text-gray-800">Participants</h2>
+                                <button id="add-participant-btn" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                    <i class="fas fa-plus mr-1"></i> Add
+                                </button>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center space-x-4">
+                                    <img src="https://ui-avatars.com/api/?name=Ahmad+Ali&background=4CAF50&color=fff" alt="Ahmad Ali" class="w-10 h-10 rounded-full">
+                                    <div class="flex-1">
+                                        <h3 class="font-medium text-gray-800">Ahmad bin Ali</h3>
+                                        <p class="text-sm text-gray-500">Lot A5</p
