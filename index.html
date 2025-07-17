@@ -273,19 +273,47 @@ window.onload = loadPeserta;
                     </div>
 
                     <!-- Participants -->
-                    <div class="bg-white rounded-lg shadow overflow-hidden">
-                        <div class="p-4 border-b border-gray-200">
-                            <div class="flex items-center justify-between">
-                                <h2 class="text-lg font-semibold text-gray-800">Participants</h2>
-                                <button id="add-participant-btn" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                    <i class="fas fa-plus mr-1"></i> Add
-                                </button>
-                            </div>
-                        </div>
-                        <div class="divide-y divide-gray-200">
-                            <div class="p-4 hover:bg-gray-50 transition-colors">
-                                <div class="flex items-center space-x-4">
-                                    <img src="https://ui-avatars.com/api/?name=Ahmad+Ali&background=4CAF50&color=fff" alt="Ahmad Ali" class="w-10 h-10 rounded-full">
-                                    <div class="flex-1">
-                                        <h3 class="font-medium text-gray-800">Ahmad bin Ali</h3>
-                                        <p class="text-sm text-gray-500">Lot A5</p
+                    <div class="bg-white rounded-lg shadow p-6 mt-6">
+  <h2 class="text-lg font-semibold text-gray-800 mb-4">Senarai Peserta (Google Sheets)</h2>
+  <div id="pesertaList" class="space-y-4">
+    <p class="text-gray-500 text-sm">Memuatkan data peserta...</p>
+  </div>
+</div>
+
+<!-- Tambah script sebelum </body> -->
+<script>
+const API_BASE = "https://script.google.com/macros/s/AKfycby6EjXjjNZwdKmSvC-BZ9yxXc_i8D5-cKzvLT6_uWxm3RpXE-tqKdx7yW4AG8oJlpNL/exec";
+
+async function loadPeserta() {
+  const container = document.getElementById("pesertaList");
+  container.innerHTML = "<p class='text-gray-500'>Memuatkan...</p>";
+
+  try {
+    const res = await fetch(`${API_BASE}?action=getPeserta`);
+    const data = await res.json();
+
+    if (!data || data.length === 0) {
+      container.innerHTML = "<p class='text-gray-500'>Tiada peserta ditemui.</p>";
+      return;
+    }
+
+    container.innerHTML = "";
+    data.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "bg-green-50 border border-green-200 p-4 rounded shadow-sm";
+      card.innerHTML = `
+        <h3 class="text-md font-semibold text-gray-800">${p["Nama"] || "-"}</h3>
+        <p class="text-sm text-gray-600">Lot: ${p["Lot"] || "-"}</p>
+        <p class="text-sm text-gray-600">Telefon: ${p["No Telefon"] || "-"}</p>
+        <p class="text-sm text-gray-500">Tarikh Sertai: ${p["Tarikh Sertai"] || "-"}</p>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    container.innerHTML = `<p class='text-red-500'>Ralat semasa ambil data peserta.</p>`;
+    console.error("Ralat API:", err);
+  }
+}
+
+window.onload = loadPeserta;
+</script>
